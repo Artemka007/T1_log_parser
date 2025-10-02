@@ -3,7 +3,7 @@ version: '3.8'
 services:
   terraform-frontend:
       build:
-        context: ./T1_front
+        context: ./frontend
         dockerfile: Dockerfile
       container_name: terraform-frontend
       ports:
@@ -15,13 +15,13 @@ services:
       restart: unless-stopped
 
   terraform-server:
-    build: ./T1_back
+    build: ./backend
     container_name: terraform-main-server
     ports:
       - "8000:5000"
     volumes:
-      - ./T1_back/plugins:/app/plugins
-      - ./T1_back/data:/app/data
+      - ./backend/plugins:/app/plugins
+      - ./backend/data:/app/data
     environment:
       - PYTHONPATH=/app
     working_dir: /app
@@ -31,12 +31,12 @@ services:
       - terraform-network
 
   error-aggregator:
-    build: ./T1_back
+    build: ./backend
     ports:
       - "50051:50051"
     volumes:
-      - ./T1_back/plugins:/app/plugins
-      - ./T1_back/data:/app/data
+      - ./backend/plugins:/app/plugins
+      - ./backend/data:/app/data
     environment:
       - PYTHONPATH=/app
     working_dir: /app
@@ -46,14 +46,14 @@ services:
     command: python plugins/error_aggregator.py
 
   security-scanner:
-    build: ./T1_back
+    build: ./backend
     ports:
       - "50052:50052"
     environment:
       - PYTHONPATH=/app
     volumes:
-      - ./T1_back/plugins:/app/plugins
-      - ./T1_back/data:/app/data
+      - ./backend/plugins:/app/plugins
+      - ./backend/data:/app/data
     working_dir: /app
     restart: unless-stopped
     networks:
@@ -61,12 +61,12 @@ services:
     command: python plugins/security_scanner.py
 
   performance-analyzer:
-    build: ./T1_back
+    build: ./backend
     ports:
       - "50053:50053"
     volumes:
-      - ./T1_back/plugins:/app/plugins
-      - ./T1_back/data:/app/data
+      - ./backend/plugins:/app/plugins
+      - ./backend/data:/app/data
     environment:
       - PYTHONPATH=/app
     working_dir: /app
